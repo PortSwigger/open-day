@@ -49,9 +49,9 @@ class MyServer(SimpleHTTPRequestHandler):
         return None
 
 
-    # Should return True if the user us authenticated or False if they are not
     def authenticate(self, username, password):
         # Check that the username and password match what we are expecting
+        # Should return True if the user is authenticated or False if they are not
         return False
 
 
