@@ -48,10 +48,8 @@ class MyServer(SimpleHTTPRequestHandler):
 
 
     def do_logout(self):
-        self.send_response(302)
-        self.send_header('Location', '/')
-        self.send_cookie('authenticated=false; expires=Thu, 01 Jan 1970 00:00:00 GMT')
-        return self.end_headers()
+        # Clear the cookie and redirect to the login page
+        return None
 
 
     # Should return True if the user us authenticated or False if they are not
