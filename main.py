@@ -75,9 +75,9 @@ class MyServer(SimpleHTTPRequestHandler):
 
 
 if __name__ == '__main__':
-    server = HTTPServer(("localhost", 8080), MyServer)
+    server = HTTPServer(("localhost", 8443), MyServer)
     server.socket = ssl.wrap_socket(server.socket, keyfile="key.pem", certfile='cert.pem', server_side=True)
-    print("Server started on https://localhost:8080")
+    print("Server started on https://localhost:8443")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
