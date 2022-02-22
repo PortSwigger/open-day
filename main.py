@@ -51,7 +51,8 @@ class MyServer(SimpleHTTPRequestHandler):
 
     # Should return True if the user us authenticated or False if they are not
     def authenticate(self, username, password):
-        return username == "user" and password == "1234"
+        # Check that the username and password match what we are expecting
+        return False
 
 
     def send_cookie(self, cookie):
