@@ -38,7 +38,7 @@ class MyServer(SimpleHTTPRequestHandler):
         if self.authenticate(form_data['username'], form_data['password']):
             self.send_response(302)
             self.send_header('Location', '/secure/')
-            self.send_cookie('authenticated=true')
+            # send authenticated cookie
             return self.end_headers()
         else:
             return self.send_error(401)
