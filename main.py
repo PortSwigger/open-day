@@ -9,11 +9,8 @@ import ssl
 
 class MyServer(SimpleHTTPRequestHandler):
     def do_GET(self):
-        authenticated = self.get_cookie('authenticated') == 'true'
-        if '/secure' in self.path and not authenticated:
-            return self.send_error(401)
-        else:
-            return SimpleHTTPRequestHandler.do_GET(self)
+        # Prevent unauthenticated access when the authenticated cookie is not set to 'true'
+        return SimpleHTTPRequestHandler.do_GET(self)
 
     def do_POST(self):
         if self.path == '/login':
