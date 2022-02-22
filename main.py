@@ -9,9 +9,7 @@ import ssl
 
 class MyServer(SimpleHTTPRequestHandler):
     def do_GET(self):
-        cookies = SimpleCookie(self.headers.get('Cookie'))
-        authenticated = 'authenticated' in cookies.keys() and cookies['authenticated'].value == 'true'
-
+        authenticated = self.get_cookie('authenticated') == 'true'
         if '/secure' in self.path and not authenticated:
             return self.send_error(401)
         else:
@@ -43,7 +41,7 @@ class MyServer(SimpleHTTPRequestHandler):
         if self.authenticate(form_data['username'], form_data['password']):
             self.send_response(302)
             self.send_header('Location', '/secure/')
-            self.send_header('Set-Cookie', 'authenticated=true')
+            self.send_cookie('authenticated=true')
             return self.end_headers()
         else:
             return self.send_error(401)
@@ -52,13 +50,23 @@ class MyServer(SimpleHTTPRequestHandler):
     def do_logout(self):
         self.send_response(302)
         self.send_header('Location', '/')
-        self.send_header('Set-Cookie', 'authenticated=false; expires=Thu, 01 Jan 1970 00:00:00 GMT')
+        self.send_cookie('authenticated=false; expires=Thu, 01 Jan 1970 00:00:00 GMT')
         return self.end_headers()
 
 
     # Should return True if the user us authenticated or False if they are not
     def authenticate(self, username, password):
-        return username = "user" and password == "1234"
+        return username == "user" and password == "1234"
+
+
+    def send_cookie(self, cookie):
+        self.send_header('Set-Cookie', cookie)
+
+
+    def get_cookie(self, cookie):
+        cookies = SimpleCookie(self.headers.get('Cookie'))
+        if cookie in cookies.keys():
+            return cookies[cookie].value
 
 
     def end_headers(self):
