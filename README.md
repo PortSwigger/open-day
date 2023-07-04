@@ -1,5 +1,4 @@
 # Web Server Exercise
-___
 
 The aim of this exercise is to familiarize yourself with HTTP requests and responses, and take a look at some basic authentication mechanisms for logging into websites.
 In this repository, you can find a basic implementation of a web server written in Python. It is incomplete, and will need the functionality described in the comments implemented.
