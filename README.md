@@ -1,19 +1,43 @@
-# Additional Task 1
+# Additional Task 2
 
-We've created 2 new methods on the server. One accepts a comment as sent by a user, and stores it on the server. The other lists all the comments that are currently stored in the system, and the name of the user who created it.
+We've completed the steps for Additional Task 1. Both of the users can now send comments, and they are shown on the secure page just as we'd expect. Great!
 
-Feel free to compare the new `main.py` file with your version to see what changes have been made.
+Unfortunately, there are a couple of vulnerabilities in our implementation. Lets try and find them with Burp.
 
-### Step 1
-Alter the secure page so that a logged in user has a way to send comments to the server. The new endpoint requires a `POST` request to the server, and the endpoint is `/comments`. It expects form data with a field `comment`, of which should be the text content that the user sent.
+Restart your server, and visit your server in Burp's browser.
 
-You'll notice that when you send a comment to the server, the page refreshes, but you don't see the new comment being shown below to the `User comments will be shown below!` heading.
+Login using Alice or Bob's credentials.
 
-You can verify that the comments are being set to the server by visiting `/comments` from your browser, it'll show you the data that is currently stored on the server.
+Navigate to the `Target` tool, and look in the `Issues` panel. You should see `TLC cookie without secure flag set`. Feel free to click on it, and read the details in the advisory tab, but this issue basically tells you that the cookie can be accessed using JavaScript. Keep this in mind.
 
-### Setp 2
-Now that we know the comments are being stored on the server, let's update the page to show all the comments that have been sent in.
+### Main Exploit
 
-Inspect the html for the secure page, and write some JavaScript to `fetch` the comments stored on the server. This information can be retrieved from the server via a `GET` request to the `/comments` endpoint. 
+Submit the comment `<img src=x onerror="alert('XSS Attack')">`.
 
-If you need help, search for JavaScript fetch, ask one of the helpers, or ask one of your colleagues!
+The page will refresh, and you will see an alert saying XSS Attack.
+
+This alert in itself is fairly harmless, but the JavaScript code that ran could have been anything, including stealing the logged in user's session cookie!
+
+This would allow an attacker to impersonate another user, perform actions as if they were them.
+
+In this example, if Bob was able to steal Alice's cookie, Bob could post comments on Alice's behalf.
+
+It is paramount that user input is sanitised before being stored.
+
+Submit the comment `<img src=x onerror="alert(document.cookie.toString())">`
+
+You can see the user's cookie gets shown in the alert dialog.
+
+Instead of just showing the cookie in an alert, an attacker could send the session id to themselves, and now they can impersonate the user.
+
+### Partial Remediation
+
+One way we could prevent the user's cookie from being accessed would be to make the session id cookie `HttpOnly`.
+
+[This](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie) page has information on how to make a cookie `HttpOnly`. Proceed to alter the `main.py` file, and make our session id cookie `HttpOnly`.
+
+Restart your server, and try to submit the comment `<img src=x onerror="alert(document.cookie.toString())">`
+
+Now, you should see that you don't see the session id alerted to the user.
+
+Although the cookie now can't be accessed using JavaScript directly anymore, the server is still vulnerable to XSS.

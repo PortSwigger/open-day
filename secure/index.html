@@ -11,5 +11,30 @@
         <input type="submit" value="Logout"/>
     </div>
 </form>
+<form method="POST" action="/comments">
+    <div>
+        <input type="text" name="comment" />
+        <button type="submit">Send</button>
+    </div>
+</form>
+<h3>User comments will be shown below!</h3>
+<ul id=comments-list>
+</ul>
+<script>
+    let listHtml = '';
+    fetch("https://localhost:8443/comments")
+        .then(response => response.json()
+            .then(comments => {
+                comments.forEach(comment => {
+                    listHtml += `
+                    <li>
+                    ${comment.user} wrote: ${comment.comment}
+                    </li>
+                    `;
+                });
+                document.querySelector('#comments-list').innerHTML = listHtml;
+            })
+        )
+</script>
 </body>
 </html>
